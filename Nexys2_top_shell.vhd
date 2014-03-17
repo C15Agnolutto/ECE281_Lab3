@@ -95,10 +95,12 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 	PORT(
 		clk : IN std_logic;
 		reset : IN std_logic;
-		stop : IN std_logic;
-		up_down : IN std_logic;          
-		floorA : OUT std_logic_vector(3 downto 0);
-		floorB : OUT std_logic_vector(3 downto 0)
+		--stop : IN std_logic;
+		--up_down : IN std_logic;          
+		--floorA : OUT std_logic_vector(3 downto 0);
+		--floorB : OUT std_logic_vector(3 downto 0)
+		Changed_inputs: in std_logic_vector(2 downto 0);
+		floor : out std_logic_vector(3 downto 0)
 		);
 	END COMPONENT;
 
@@ -116,9 +118,10 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 --------------------------------------------------------------------------------------
 --Insert any required signal declarations below
 --------------------------------------------------------------------------------------
-	Signal El_floorA: std_logic_vector(3 downto 0);
-	Signal El_floorB: std_logic_vector(3 downto 0);
+	--Signal El_floorA: std_logic_vector(3 downto 0);
+	--Signal El_floorB: std_logic_vector(3 downto 0);
 	--Signal El_nextfloor: std_logic_vector(3 downto 0);
+	Signal El_floor: std_logic_vector(3 downto 0);
 
 begin
 
@@ -146,9 +149,11 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --------------------------------------------------------------------------------------
 
 --nibble0 <= El_floor;
-nibble0 <= El_floorA;
+--nibble0 <= El_floorA;
 --nibble1 <= El_nextfloor;
-nibble1 <= El_floorB;
+--nibble1 <= El_floorB;
+nibble0 <= El_floor;
+nibble1 <= "0000";
 nibble2 <= "0000";
 nibble3 <= "0000";
 
@@ -196,10 +201,12 @@ nibble3 <= "0000";
 	Inst_MooreElevatorController_Shell: MooreElevatorController_Shell PORT MAP(
 		clk => ClockBus_sig(25),
 		reset => btn(0),
-		stop => switch(6),
-		up_down => switch(7),
-		floorA => El_floorA ,
-		floorB => El_floorB
+		--stop => switch(6),
+		--up_down => switch(7),
+		Changed_inputs(0) => switch(5),
+		Changed_inputs(1) => switch(6),
+		Changed_inputs(2) => switch(7),
+		floor => El_floor
 	);
 
 --	Inst_MealyElevatorController_Shell: MealyElevatorController_Shell PORT MAP(
