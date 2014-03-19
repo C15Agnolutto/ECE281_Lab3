@@ -91,19 +91,25 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 --------------------------------------------------------------------------------------
 --Insert your design's component declaration below	
 --------------------------------------------------------------------------------------
+--this comonpent is used when testing all the moore and B functionality controllers
 	COMPONENT MooreElevatorController_Shell
 	PORT(
 		clk : IN std_logic;
 		reset : IN std_logic;
-		--stop : IN std_logic;
-		--up_down : IN std_logic;          
+		stop : IN std_logic;
+		up_down : IN std_logic;       
+		--floorA/B are used when testing the prime numbers functionatity
 		--floorA : OUT std_logic_vector(3 downto 0);
 		--floorB : OUT std_logic_vector(3 downto 0)
-		Changed_inputs: in std_logic_vector(2 downto 0);
+		--changed_inputs is used when testing the change_inputs functionality
+		--Changed_inputs: in std_logic_vector(2 downto 0);
+		--floor is used in testing the basic moore functionality
 		floor : out std_logic_vector(3 downto 0)
 		);
 	END COMPONENT;
 
+
+--this component is used when testing the mealy controller
 --	COMPONENT MealyElevatorController_Shell
 --	PORT(
 --		clk : IN std_logic;
@@ -120,7 +126,7 @@ signal ClockBus_sig : STD_LOGIC_VECTOR (26 downto 0);
 --------------------------------------------------------------------------------------
 	--Signal El_floorA: std_logic_vector(3 downto 0);
 	--Signal El_floorB: std_logic_vector(3 downto 0);
-	--Signal El_nextfloor: std_logic_vector(3 downto 0);
+	Signal El_nextfloor: std_logic_vector(3 downto 0);
 	Signal El_floor: std_logic_vector(3 downto 0);
 
 begin
@@ -148,11 +154,19 @@ LED <= CLOCKBUS_SIG(26 DOWNTO 19);
 --		  Example: if you are not using 7-seg display #3 set nibble3 to "0000"
 --------------------------------------------------------------------------------------
 
---nibble0 <= El_floor;
---nibble0 <= El_floorA;
---nibble1 <= El_nextfloor;
---nibble1 <= El_floorB;
+--this one is used for basic moore and mealy testing
 nibble0 <= El_floor;
+
+--this one is used for prime number functionality
+--nibble0 <= El_floorA;
+
+--this one is used in the mealy testing
+--nibble1 <= El_nextfloor;
+
+--this one is used for prime number functionality
+--nibble1 <= El_floorB;
+
+--all other cases these are set to 0 because I am not using them
 nibble1 <= "0000";
 nibble2 <= "0000";
 nibble3 <= "0000";
@@ -198,22 +212,39 @@ nibble3 <= "0000";
 -----------------------------------------------------------------------------
 --Instantiate the design you with to implement below and start wiring it up!:
 -----------------------------------------------------------------------------
+
+--this is used for all moore testing
 	Inst_MooreElevatorController_Shell: MooreElevatorController_Shell PORT MAP(
 		clk => ClockBus_sig(25),
 		reset => btn(0),
-		--stop => switch(6),
-		--up_down => switch(7),
-		Changed_inputs(0) => switch(5),
-		Changed_inputs(1) => switch(6),
-		Changed_inputs(2) => switch(7),
+		stop => switch(6),
+		up_down => switch(7),
+		--the changed_inputs are used for that functionality testing only
+		--use the switches to change what floor you want to go to
+		--they link the outputs of the moore machine when set to change_inputs
+		--Changed_inputs(0) => switch(5),
+		--Changed_inputs(1) => switch(6),
+		--Changed_inputs(2) => switch(7),
+		
+		--El_floor is used for the basic moore functionality
+		--links the output of the moore machine when set for basic moore testing
 		floor => El_floor
+		
+		--these two are used when testing the prime numbers functionality
+		--links the output of the moore machine when set for prime numbers functionality
+		--floorA => El_floorA,
+		--floorB => El_floorB
 	);
 
+--this is used for the mealy testing
 --	Inst_MealyElevatorController_Shell: MealyElevatorController_Shell PORT MAP(
 --		clk => ClockBus_sig(25),
 --		reset => btn(0),
 --		stop => switch(6),
 --		up_down => switch(7),
+
+		--these two are used when testing the mealy functionality
+		--they link the outputs of the mealy machine to the top_shell
 --		floor => El_floor,
 --		nextfloor => El_nextfloor
 --	);
