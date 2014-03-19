@@ -23,6 +23,7 @@ use UNISIM.VComponents.all;
 entity MooreElevatorController_Shell is
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
+			  --this will take in a 3 bit binary input based on switches defined in the top shell
 			  Changed_inputs: in std_logic_vector(2 downto 0);
            floor : out  STD_LOGIC_VECTOR (3 downto 0));
 
@@ -58,7 +59,7 @@ begin
 			case floor_state is
 				--when our current state is floor1
 				when floor1 =>
-			
+					--if the input is greater than 0 go to the next floor
 					if (Changed_inputs > "000") then 
 						--floor2 right?? This makes sense!
 						floor_state <= floor2;
@@ -66,19 +67,21 @@ begin
 					else
 						floor_state <= floor1;
 					end if;
+					
 				--when our current state is floor2
 				when floor2 => 
-		
+					--if the input is greater than 1 go to floor3
 					if (Changed_inputs > "001" ) then 
 						floor_state <= floor3; 			
-
+					--elseif its less than 1 go to floor 1
 					elsif (Changed_inputs < "001" ) then 
 						floor_state <= floor1;
 					--otherwise we're going to stay at floor2
 					else
 						floor_state <= floor2;
 					end if;
-
+				
+				--the commenting is repetetive in nature through the other cases
 				when floor3 =>
 					if (Changed_inputs > "010") then 
 						floor_state <= floor4;
@@ -87,7 +90,7 @@ begin
 					else
 						floor_state <= floor3;	
 					end if;
-					
+
 				when floor4 =>
 					if (Changed_inputs > "011" ) then 
 						floor_state <= floor5;
@@ -96,7 +99,7 @@ begin
 					else
 						floor_state <= floor4;	
 					end if;
-					
+
 				when floor5 =>
 					if (Changed_inputs > "100" ) then 
 						floor_state <= floor6;
@@ -105,7 +108,7 @@ begin
 					else
 						floor_state <= floor5;	
 					end if;
-					
+
 				when floor6 =>
 					if (Changed_inputs > "101" ) then 
 						floor_state <= floor7;
@@ -114,7 +117,7 @@ begin
 					else
 						floor_state <= floor6;	
 					end if;
-					
+
 				when floor7 =>
 					if (Changed_inputs > "110" ) then 
 						floor_state <= floor8;
@@ -123,14 +126,14 @@ begin
 					else
 						floor_state <= floor7;	
 					end if;
-					
+
 				when floor8 =>
 					if (Changed_inputs < "111" ) then 
 						floor_state <= floor7;	
 					else 
 						floor_state <= floor8;
 					end if;
-					
+
 				--This line accounts for phantom states
 				when others =>
 					floor_state <= floor1;
@@ -139,7 +142,8 @@ begin
 	end if;
 end process;
 
--- Here you define your output logic. Finish the statements below
+--simply defined the output logic
+--based on the binary code, the correct floor is correlated to it
 floor <= "0000" when (floor_state = floor1) else
 			"0001" when (floor_state = floor2) else
 			"0010" when (floor_state = floor3) else
@@ -151,4 +155,3 @@ floor <= "0000" when (floor_state = floor1) else
 			"0000";
 
 end Behavioral;
-
