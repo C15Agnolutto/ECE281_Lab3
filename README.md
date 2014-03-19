@@ -56,20 +56,20 @@ The book shows it like this frequently. It is just easier to understand what is 
 
 
 #Bad Code
-`when floor3 =>`
-                   ` if (                            ) then `
-                       ` floor_state <= `
-                   ` elsif (                     ) then `
-                   `     floor_state <=  `
-                  `  else`
-                  `      floor_state <=  `
-                `    end if;`
-             `   when floor4 =>`
-                `    if (                            ) then `
-                  `      floor_state <=  `
-                  `  else `
-                  `      floor_state <=  `
-                  `  end if;`
+```when floor3 =>
+                   if (                            ) then 
+                        floor_state <= 
+                    elsif (                     ) then 
+                       floor_state <=  
+                   else
+                       floor_state <=  
+                   end if;
+                when floor4 =>
+                    if (                            ) then 
+                        floor_state <=  
+                    else 
+                        floor_state <=  
+                    end if;
 
 This bad because it is blank. Although this was done on purpose, it still doesn't complile in this format.
 
