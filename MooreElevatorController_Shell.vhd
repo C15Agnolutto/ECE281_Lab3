@@ -23,10 +23,9 @@ use UNISIM.VComponents.all;
 entity MooreElevatorController_Shell is
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
-           stop : in  STD_LOGIC;
-           up_down : in  STD_LOGIC;
-           floorA : out  STD_LOGIC_VECTOR (3 downto 0);
-			  floorB : out  STD_LOGIC_VECTOR (3 downto 0));
+			  Changed_inputs: in std_logic_vector(2 downto 0);
+           floor : out  STD_LOGIC_VECTOR (3 downto 0));
+
 end MooreElevatorController_Shell;
 
 architecture Behavioral of MooreElevatorController_Shell is
@@ -61,7 +60,7 @@ begin
 				when floor1 =>
 					--if up_down is set to "go up" and stop is set to 
 					--"don't stop" which floor do we want to go to? 2
-					if (up_down='1' and stop='0') then 
+					if (Changed_inputs > "000") then 
 						--floor2 right?? This makes sense!
 						floor_state <= floor2;
 					--otherwise we're going to stay at floor1
@@ -72,11 +71,11 @@ begin
 				when floor2 => 
 					--if up_down is set to "go up" and stop is set to 
 					--"don't stop" which floor do we want to go to? 3
-					if (up_down='1' and stop='0') then 
+					if (Changed_inputs > "001" ) then 
 						floor_state <= floor3; 			
 					--if up_down is set to "go down" and stop is set to 
 					--"don't stop" which floor do we want to go to? 1
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "001" ) then 
 						floor_state <= floor1;
 					--otherwise we're going to stay at floor2
 					else
@@ -85,47 +84,47 @@ begin
 				
 --COMPLETE THE NEXT STATE LOGIC ASSIGNMENTS FOR FLOORS 3 AND 4
 				when floor3 =>
-					if (up_down='1' and stop ='0') then 
+					if (Changed_inputs > "010") then 
 						floor_state <= floor4;
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "010" ) then 
 						floor_state <= floor2;	
 					else
 						floor_state <= floor3;	
 					end if;
 				when floor4 =>
-					if (up_down='1' and stop ='0') then 
+					if (Changed_inputs > "011" ) then 
 						floor_state <= floor5;
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "011" ) then 
 						floor_state <= floor3;	
 					else
 						floor_state <= floor4;	
 					end if;
 				when floor5 =>
-					if (up_down='1' and stop ='0') then 
+					if (Changed_inputs > "100" ) then 
 						floor_state <= floor6;
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "100" ) then 
 						floor_state <= floor4;	
 					else
 						floor_state <= floor5;	
 					end if;
 				when floor6 =>
-					if (up_down='1' and stop ='0') then 
+					if (Changed_inputs > "101" ) then 
 						floor_state <= floor7;
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "101" ) then 
 						floor_state <= floor5;	
 					else
 						floor_state <= floor6;	
 					end if;
 				when floor7 =>
-					if (up_down='1' and stop ='0') then 
+					if (Changed_inputs > "110" ) then 
 						floor_state <= floor8;
-					elsif (up_down='0' and stop='0') then 
+					elsif (Changed_inputs < "110" ) then 
 						floor_state <= floor6;	
 					else
 						floor_state <= floor7;	
 					end if;
 				when floor8 =>
-					if (up_down='0' and stop='0') then 
+					if (Changed_inputs > "111" ) then 
 						floor_state <= floor7;	
 					else 
 						floor_state <= floor8;
@@ -140,22 +139,15 @@ begin
 end process;
 
 -- Here you define your output logic. Finish the statements below
-floorA <= "0010" when (floor_state = floor1) else
-			"0011" when ( floor_state = floor2) else
-			"0101" when ( floor_state = floor3) else
-			"0111" when ( floor_state = floor4) else
-			"0001" when ( floor_state = floor5) else
-			"0011" when ( floor_state = floor6) else
-			"0111" when ( floor_state = floor7) else
-			"1001" when ( floor_state = floor8);
-floorB <= "0000" when (floor_state = floor1) else
-			"0000" when ( floor_state = floor2) else
-			"0000" when ( floor_state = floor3) else
-			"0000" when ( floor_state = floor4) else
-			"0001" when ( floor_state = floor5) else
-			"0001" when ( floor_state = floor6) else
-			"0001" when ( floor_state = floor7) else
-			"0001" when ( floor_state = floor8);
+floor <= "0000" when (floor_state = floor1) else
+			"0001" when (floor_state = floor2) else
+			"0010" when (floor_state = floor3) else
+			"0011" when (floor_state = floor4) else
+			"0100" when (floor_state = floor5) else
+			"0101" when (floor_state = floor6) else
+			"0110" when (floor_state = floor7) else
+			"0111" when (floor_state = floor8) else
+			"0000";
 
 end Behavioral;
 
