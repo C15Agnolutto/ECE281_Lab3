@@ -40,3 +40,89 @@ from the new changed input moore machine file.I only used nibble0 and it was ass
 zero. Testing went smooth. Toggling the three switches to go to the floor you wanted worked fine and it didn't jump
 from floor4 to floor2 or anything weird that might've occured because I used a 3 bit binary system to indicate the floor.
 
+
+
+### Code Critique of the CE3 Moore Machine Shell
+
+#Bad Code
+`if clk'event and clk='1' then`
+
+Not necessarily wrong but it can be done more efficently shown below.
+
+#Good Code
+`if (rising_edge(clk))then`
+
+The book shows it like this frequently. It is just easier to understand what is happening.
+
+
+#Bad Code
+`when floor3 =>`
+                   ` if (                            ) then `
+                       ` floor_state <= `
+                   ` elsif (                     ) then `
+                   `     floor_state <=  `
+                  `  else`
+                  `      floor_state <=  `
+                `    end if;`
+             `   when floor4 =>`
+                `    if (                            ) then `
+                  `      floor_state <=  `
+                  `  else `
+                  `      floor_state <=  `
+                  `  end if;`
+
+This bad because it is blank. Although this was done on purpose, it still doesn't complile in this format.
+
+#Good Code
+`				when floor3 =>`
+				`	if (up_down='1' and stop ='0') then `
+				`		floor_state <= floor4;`
+			`		elsif (up_down='0' and stop='0') then `
+			`			floor_state <= floor2;	`
+			`		else`
+			`			floor_state <= floor3;	`
+			`		end if;`
+			
+This is good because it has been filled in correctly. The code now compiles and works as anticpated.
+
+
+#Bad Code
+`floor <= "0001" when (floor_state =       ) else`
+          `  "0010" when (                    ) else`
+          `  "0011" when (                    ) else`
+          `  "0100" when (                    ) else`
+          `  "0001";`
+          
+This code is bad because again it is blank. It does not compile in this state.
+
+#Good Code
+`floor <= "0001" when (floor_state = floor1) else`
+		`	"0010" when ( floor_state = floor2) else`
+		`	"0011" when ( floor_state = floor3) else`
+		`	"0100" when ( floor_state = floor4) else`
+		`	"0001";`
+		
+This code is good because it is filled in correctly, and it now compiles.
+
+
+#Bad Code
+`floor_state_machine: process(clk)`
+
+This is bad because this could possible generate memory which is bad in a Moore machine.
+
+`floor_state_machine: process(clk,reset, floor_state)`
+
+This is good because this is stop any possible memory from forming. 
+
+
+
+
+
+
+
+
+
+
+
+
+
