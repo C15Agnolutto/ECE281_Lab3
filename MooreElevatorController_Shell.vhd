@@ -23,9 +23,11 @@ use UNISIM.VComponents.all;
 entity MooreElevatorController_Shell is
     Port ( clk : in  STD_LOGIC;
            reset : in  STD_LOGIC;
-			  Changed_inputs: in std_logic_vector(2 downto 0);
-           floor : out  STD_LOGIC_VECTOR (3 downto 0));
-
+           stop : in  STD_LOGIC;
+           up_down : in  STD_LOGIC;
+			  --these are used in the prime numbers testing format
+           floorA : out  STD_LOGIC_VECTOR (3 downto 0);
+			  floorB : out  STD_LOGIC_VECTOR (3 downto 0));
 end MooreElevatorController_Shell;
 
 architecture Behavioral of MooreElevatorController_Shell is
@@ -49,8 +51,7 @@ floor_state_machine: process(clk)
 begin
 	--clk'event and clk='1' is VHDL-speak for a rising edge
 	if clk'event and clk='1' then
-		--reset is active high and will return the elevator to floor1
-		--Question: is reset synchronous or asynchronous? synchronous
+
 		if reset='1' then
 			floor_state <= floor1;
 		--now we will code our next-state logic
@@ -58,10 +59,10 @@ begin
 			case floor_state is
 				--when our current state is floor1
 				when floor1 =>
-					--if up_down is set to "go up" and stop is set to 
-					--"don't stop" which floor do we want to go to? 2
-					if (Changed_inputs > "000") then 
-						--floor2 right?? This makes sense!
+					--if up_down is set to "go up" and stop is set to 0 then go to floor 2
+
+					if (up_down='1' and stop='0') then 
+
 						floor_state <= floor2;
 					--otherwise we're going to stay at floor1
 					else
@@ -70,66 +71,68 @@ begin
 				--when our current state is floor2
 				when floor2 => 
 					--if up_down is set to "go up" and stop is set to 
-					--"don't stop" which floor do we want to go to? 3
-					if (Changed_inputs > "001" ) then 
+					--"don't stop" go to floor 3
+					if (up_down='1' and stop='0') then 
 						floor_state <= floor3; 			
 					--if up_down is set to "go down" and stop is set to 
-					--"don't stop" which floor do we want to go to? 1
-					elsif (Changed_inputs < "001" ) then 
+					--"don't stop" go to floor 1
+					elsif (up_down='0' and stop='0') then 
 						floor_state <= floor1;
 					--otherwise we're going to stay at floor2
 					else
 						floor_state <= floor2;
 					end if;
-				
---COMPLETE THE NEXT STATE LOGIC ASSIGNMENTS FOR FLOORS 3 AND 4
+
+--this process continues for the other states
 				when floor3 =>
-					if (Changed_inputs > "010") then 
+					if (up_down='1' and stop ='0') then 
 						floor_state <= floor4;
-					elsif (Changed_inputs < "010" ) then 
+					elsif (up_down='0' and stop='0') then 
 						floor_state <= floor2;	
 					else
 						floor_state <= floor3;	
 					end if;
 				when floor4 =>
-					if (Changed_inputs > "011" ) then 
+					if (up_down='1' and stop ='0') then 
 						floor_state <= floor5;
-					elsif (Changed_inputs < "011" ) then 
+					elsif (up_down='0' and stop='0') then 
 						floor_state <= floor3;	
 					else
 						floor_state <= floor4;	
 					end if;
-				when floor5 =>
-					if (Changed_inputs > "100" ) then 
-						floor_state <= floor6;
-					elsif (Changed_inputs < "100" ) then 
-						floor_state <= floor4;	
-					else
-						floor_state <= floor5;	
-					end if;
-				when floor6 =>
-					if (Changed_inputs > "101" ) then 
-						floor_state <= floor7;
-					elsif (Changed_inputs < "101" ) then 
-						floor_state <= floor5;	
-					else
-						floor_state <= floor6;	
-					end if;
-				when floor7 =>
-					if (Changed_inputs > "110" ) then 
-						floor_state <= floor8;
-					elsif (Changed_inputs < "110" ) then 
-						floor_state <= floor6;	
-					else
-						floor_state <= floor7;	
-					end if;
-				when floor8 =>
-					if (Changed_inputs > "111" ) then 
-						floor_state <= floor7;	
-					else 
-						floor_state <= floor8;
-					end if;
 					
+				--the cases below are used for the prime numbers testing
+--				when floor5 =>
+--					if (up_down='1' and stop ='0') then 
+--						floor_state <= floor6;
+--					elsif (up_down='0' and stop='0') then 
+--						floor_state <= floor4;	
+--					else
+--						floor_state <= floor5;	
+--					end if;
+--				when floor6 =>
+--					if (up_down='1' and stop ='0') then 
+--						floor_state <= floor7;
+--					elsif (up_down='0' and stop='0') then 
+--						floor_state <= floor5;	
+--					else
+--						floor_state <= floor6;	
+--					end if;
+--				when floor7 =>
+--					if (up_down='1' and stop ='0') then 
+--						floor_state <= floor8;
+--					elsif (up_down='0' and stop='0') then 
+--						floor_state <= floor6;	
+--					else
+--						floor_state <= floor7;	
+--					end if;
+--				when floor8 =>
+--					if (up_down='0' and stop='0') then 
+--						floor_state <= floor7;	
+--					else 
+--						floor_state <= floor8;
+--					end if;
+
 				--This line accounts for phantom states
 				when others =>
 					floor_state <= floor1;
@@ -138,16 +141,34 @@ begin
 	end if;
 end process;
 
--- Here you define your output logic. Finish the statements below
-floor <= "0000" when (floor_state = floor1) else
-			"0001" when (floor_state = floor2) else
-			"0010" when (floor_state = floor3) else
-			"0011" when (floor_state = floor4) else
-			"0100" when (floor_state = floor5) else
-			"0101" when (floor_state = floor6) else
-			"0110" when (floor_state = floor7) else
-			"0111" when (floor_state = floor8) else
-			"0000";
+--the output below is for the prime numbers testing format
+--floorA does the singles-digit number
+--floorB does the tens-digit number
+--for the first 8 prime numbers starting at 2
+
+--floorA <= "0010" when (floor_state = floor1) else
+--			"0011" when ( floor_state = floor2) else
+--			"0101" when ( floor_state = floor3) else
+--			"0111" when ( floor_state = floor4) else
+--			"0001" when ( floor_state = floor5) else
+--			"0011" when ( floor_state = floor6) else
+--			"0111" when ( floor_state = floor7) else
+--			"1001" when ( floor_state = floor8);
+--floorB <= "0000" when (floor_state = floor1) else
+--			"0000" when ( floor_state = floor2) else
+--			"0000" when ( floor_state = floor3) else
+--			"0000" when ( floor_state = floor4) else
+--			"0001" when ( floor_state = floor5) else
+--			"0001" when ( floor_state = floor6) else
+--			"0001" when ( floor_state = floor7) else
+--			"0001" when ( floor_state = floor8);
+
+--this output is used for the basic moore functionality testing format
+--the binary correlates to the current floor it is on
+floor <= "0001" when (floor_state = floor1) else
+			"0010" when ( floor_state = floor2) else
+			"0011" when ( floor_state = floor3) else
+			"0100" when ( floor_state = floor4) else
+			"0001";
 
 end Behavioral;
-
