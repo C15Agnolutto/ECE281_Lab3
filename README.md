@@ -69,7 +69,8 @@ The book shows it like this frequently. It is just easier to understand what is 
                         floor_state <=  
                     else 
                         floor_state <=  
-                    end if;```
+                    end if;
+                    ```
 
 This bad because it is blank. Although this was done on purpose, it still doesn't complile in this format.
 
