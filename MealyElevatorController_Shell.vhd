@@ -36,18 +36,21 @@ signal floor_state : floor_state_type;
 
 begin
 
----------------------------------------------------------
---Code your Mealy machine next-state process below
---Question: Will it be different from your Moore Machine? Yes
----------------------------------------------------------
 floor_state_machine: process(clk)
 begin
 
-	if clk'event and clk='1' then
+
+if clk'event and clk='1' then
+	--mealy machine so this part is different from the moore
 	if reset='1' then
 		floor_state <=floor1;
 		
 	else
+	----these floor state cases are the same from the moore state machine
+	--pretty self explanatory
+	--if on a given floor and indicated going up with stop='0' then go to the next floor, vice verse
+	--for going down a floor, and add the else statement that keeps the floor the same because the 
+	--elevator is not changing floors
 		case floor_state is
 
 				when floor1 =>
@@ -96,22 +99,25 @@ begin
 
 end process;
 
------------------------------------------------------------
---Code your Ouput Logic for your Mealy machine below
---Remember, now you have 2 outputs (floor and nextfloor)
------------------------------------------------------------
+------------------------------------------------
+--output
+------------------------------------------------
+--outputs what floor you are on in correlation with the correct floor state
 floor <= "0001" when (floor_state = floor1) else
 			"0010" when ( floor_state = floor2) else
 			"0011" when ( floor_state = floor3) else
 			"0100" when ( floor_state = floor4) else
 			"0001";
-nextfloor <=	"0010" when (floor_state = floor1) else
+			
+--accounts for staying on top and bottom floor as well as moving up and down
+nextfloor <=	"0010" when (floor_state = floor1 and up_down = '1') else
 			"0010" when (floor_state = floor3 and up_down = '0') else
 			"0001" when (floor_state = floor2 and up_down = '0') else
 			"0011" when (floor_state = floor2) else
 			"0100" when (floor_state = floor3) else
+			"0100" when (floor_state = floor4 and up_down = '1') else
 			"0011" when (floor_state = floor4) else
-			"0010";	
+			"0001";	
 
 end Behavioral;
 
